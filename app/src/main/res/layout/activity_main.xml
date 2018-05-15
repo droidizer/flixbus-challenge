@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+        <import type="com.guru.app.flixbus.utils.rv.LayoutManagers" />
+        <import type="android.view.View" />
+        <variable
+            name="mainViewModel"
+            type="com.guru.app.flixbus.main.viewmodel.MainViewModel" />
+    </data>
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.guru.app.flixbus.utils.rv.AndroidBindableRecyclerView
+            android:id="@+id/main_rv"
+            itemDecoration="@{mainViewModel.itemDecoration}"
+            itemViewBinder="@{mainViewModel.templatesForObjects}"
+            items="@{mainViewModel.listItems}"
+            layoutManager="@{LayoutManagers.linear()}"
+            onItemClickListener="@{mainViewModel.itemClickListener}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="@{mainViewModel.loading? View.GONE: View.VISIBLE}" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:text="@{mainViewModel.errorMessage}"
+            android:visibility="@{mainViewModel.errorVisible? View.VISIBLE: View.GONE}" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:visibility="@{mainViewModel.loading? View.VISIBLE: View.GONE}" />
+    </FrameLayout>
+</layout>
