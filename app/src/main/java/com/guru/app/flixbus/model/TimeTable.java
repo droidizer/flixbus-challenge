@@ -1,18 +1,26 @@
 package com.guru.app.flixbus.model;
 
 
-import com.google.gson.annotations.SerializedName;
-
 import java.util.List;
 
 public class TimeTable {
 
-    @SerializedName("arrivals")
-    public List<Trip> arrivals;
+    public TimeTableModel timeTableModel;
 
-    @SerializedName("departures")
-    public List<Trip> departures;
+    public TimeTableModel getTimeTableModel() {
+        return timeTableModel;
+    }
 
-    @SerializedName("message")
-    public String message;
+    public void setTimeTableModel(TimeTableModel timeTableModel) {
+        this.timeTableModel = timeTableModel;
+    }
+
+    public class TimeTableModel {
+
+        public List<Trip> arrivals;
+
+        public List<Trip> departures;
+
+        public String message;
+    }
 }

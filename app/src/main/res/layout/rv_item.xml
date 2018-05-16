@@ -1,63 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:tools="http://schemas.android.com/tools">
+
     <data>
+
         <variable
-            name="viewModel"
-            type="com.guru.app.flixbus.main.viewmodel.MainViewModel" />
+            name="tripViewModel"
+            type="com.guru.app.flixbus.main.viewmodel.TripViewModel" />
     </data>
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/padding_8"
-        android:background="@android:color/white">
+        android:background="@android:color/white"
+        android:padding="@dimen/padding_8">
 
         <TextView
-            android:id="@+id/date"
-            tools:text="Date"
-            style="?android:attr/textAppearanceMedium"
+            android:id="@+id/direction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/darker_gray">
+            android:text="@{tripViewModel.direction}"
+            android:textSize="@dimen/text_20"
+            android:textColor="@color/gray"
+            tools:text="Report">
 
         </TextView>
 
         <TextView
-            android:id="@+id/weather_report"
+            android:id="@+id/line_code"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/date"
-            tools:text="Report"
-            android:textSize="18sp">
+            android:layout_below="@id/direction"
+            android:text="@{tripViewModel.lineCode}"
+            android:textSize="@dimen/text_18"
+            android:textColor="@color/secondary_text"
+            tools:text="Line Code">
 
         </TextView>
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_centerVertical="true"
+        <TextView
+            android:id="@+id/time"
+            android:textSize="@dimen/text_20"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:text="@{tripViewModel.time}"
+            android:textColor="@color/gray"
+            tools:text="Time">
 
-            <TextView
-                android:id="@+id/dayTemp"
-                android:layout_gravity="center"
-                style="?android:attr/textAppearanceLarge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@android:color/darker_gray"
-                tools:text="20">
-            </TextView>
-
-            <TextView
-                android:layout_gravity="top"
-                android:id="@+id/dayTempLabel"
-                style="?android:attr/textAppearanceSmall"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:text="o">
-            </TextView>
-        </LinearLayout>
+        </TextView>
     </RelativeLayout>
 </layout>
 

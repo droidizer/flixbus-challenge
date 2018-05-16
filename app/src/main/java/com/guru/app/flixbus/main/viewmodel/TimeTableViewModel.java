@@ -13,6 +13,8 @@ import android.view.View;
 import com.guru.app.flixbus.BR;
 import com.guru.app.flixbus.R;
 import com.guru.app.flixbus.misc.AndroidBaseViewModel;
+import com.guru.app.flixbus.model.TimeTable;
+import com.guru.app.flixbus.model.Trip;
 import com.guru.app.flixbus.network.IApiManager;
 import com.guru.app.flixbus.utils.rv.AndroidItemBinder;
 import com.guru.app.flixbus.utils.rv.ItemClickListener;
@@ -29,11 +31,13 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
 import retrofit2.HttpException;
 
-public class MainViewModel extends AndroidBaseViewModel {
+public class TimeTableViewModel extends AndroidBaseViewModel {
+
+    public static final int STATION_ID = 10;
 
     private final IApiManager mApiManager;
 
-    private Disposable mWeatherDisposable = Disposables.disposed();
+    private Disposable mDisposable = Disposables.disposed();
 
     private boolean mLoading;
 
@@ -45,23 +49,39 @@ public class MainViewModel extends AndroidBaseViewModel {
 
     private Map<Class<?>, AndroidItemBinder> mTemplates;
 
-    private List<AndroidBaseViewModel> mListItems = new ArrayList<>();
+    private List<AndroidBaseViewModel> mListItems;
 
     @Inject
-    public MainViewModel(Application application, IApiManager apiManager, Resources resources) {
+    public TimeTableViewModel(Application application, IApiManager apiManager, Resources resources) {
         super(application);
         mApiManager = apiManager;
         mResources = resources;
     }
 
     @Override
-    public void onCreate() {
-        super.onCreate();
+    public void onStart() {
+        super.onStart();
+        setLoading(true);
+        mListItems = new ArrayList<>();
+        subscribeToDataChanges();
+    }
+
+    private void subscribeToDataChanges() {
+        if (mDisposable.isDisposed()) {
+            mDisposable = mApiManager.getTimeTable(STATION_ID)
+                    .filter(response -> response != null)
+                    .subscribe(this::accept
+                            , throwable -> {
+                                setLoading(false);
+                                notifyError(throwable);
+                            });
+        }
     }
 
     public Map<Class<?>, AndroidItemBinder> getTemplatesForObjects() {
         if (mTemplates == null) {
             mTemplates = new HashMap<>();
+            mTemplates.put(TripViewModel.class, new AndroidItemBinder(R.layout.rv_item, BR.tripViewModel));
         }
         return mTemplates;
     }
@@ -72,15 +92,9 @@ public class MainViewModel extends AndroidBaseViewModel {
         return new RecyclerView.ItemDecoration() {
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                int position = parent.getChildAdapterPosition(view);
-                if (position != 0) {
-                    try {
-                        outRect.top = bottomMargin;
-                        outRect.right = horizontalMargin;
-                        outRect.left = horizontalMargin;
-                    } catch (Exception e) {
-                    }
-                }
+                outRect.top = bottomMargin;
+                outRect.right = horizontalMargin;
+                outRect.left = horizontalMargin;
             }
         };
     }
@@ -89,7 +103,6 @@ public class MainViewModel extends AndroidBaseViewModel {
         return ((view, item) -> {
         });
     }
-
 
     @Bindable
     public List<?> getListItems() {
@@ -105,7 +118,6 @@ public class MainViewModel extends AndroidBaseViewModel {
     public boolean isErrorVisible() {
         return mErrorVisible;
     }
-
 
     private void notifyError(Throwable throwable) {
         setLoading(false);
@@ -142,9 +154,21 @@ public class MainViewModel extends AndroidBaseViewModel {
 
     @Override
     public void onDestroy() {
-        mWeatherDisposable.dispose();
-        mListItems = null;
+        mDisposable.dispose();
+        mListItems.clear();
         super.onDestroy();
+    }
+
+    private void accept(TimeTable trip) {
+        if (trip.timeTableModel != null
+                && trip.timeTableModel.departures != null
+                && !trip.timeTableModel.departures.isEmpty()) {
+            for (Trip t : trip.timeTableModel.departures) {
+                mListItems.add(new TripViewModel(getApplication(), t));
+            }
+        }
+        setLoading(false);
+        notifyBindings();
     }
 
     public static class Factory implements ViewModelProvider.Factory {
@@ -155,16 +179,16 @@ public class MainViewModel extends AndroidBaseViewModel {
         private Resources mResources;
 
         @Inject
-        public Factory(@NonNull Application application, IApiManager flixbusApiManager, Resources resources) {
+        public Factory(@NonNull Application application, IApiManager apiManager, Resources resources) {
             mApplication = application;
-            mApiManager = flixbusApiManager;
+            mApiManager = apiManager;
             mResources = resources;
         }
 
         @NonNull
         @Override
         public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-            return (T) new MainViewModel(mApplication, mApiManager, mResources);
+            return (T) new TimeTableViewModel(mApplication, mApiManager, mResources);
         }
     }
 }

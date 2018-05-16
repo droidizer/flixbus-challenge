@@ -9,12 +9,15 @@ import io.reactivex.Observable;
 public class ApiManager implements IApiManager {
 
     @Inject
-    public ApiManager() {
+    public ApiService mApiService;
 
+    @Inject
+    public ApiManager(ApiService apiService) {
+     mApiService = apiService;
     }
 
     @Override
     public Observable<TimeTable> getTimeTable(int stationId) {
-        return Observable.just(new TimeTable());
+        return mApiService.getTimeTable(stationId);
     }
 }

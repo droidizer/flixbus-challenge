@@ -2,10 +2,6 @@ package com.guru.app.flixbus.model;
 
 public class Trip {
 
-    private String through_the_stations;
-
-    private String line_direction;
-
     private String direction;
 
     private String line_code;
@@ -32,23 +28,6 @@ public class Trip {
             this.timestamp = timestamp;
         }
     }
-
-    public String getThroughTheStations() {
-        return through_the_stations;
-    }
-
-    public void setThroughTheStations(String through_the_stations) {
-        this.through_the_stations = through_the_stations;
-    }
-
-    public String getLineDirection() {
-        return line_direction;
-    }
-
-    public void setLineDirection(String line_direction) {
-        this.line_direction = line_direction;
-    }
-
 
     public String getDirection() {
         return direction;
