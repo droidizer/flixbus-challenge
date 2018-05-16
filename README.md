@@ -3,3 +3,5 @@ The project uses MVVM, Arch components, Dagger2, Android Bindings, RX and some p
 
 The app shows the timetable of departures for Station id = 10. 
 
+The case for 0 results is not explicitly handled. 
+
